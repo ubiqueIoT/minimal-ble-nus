@@ -64,6 +64,8 @@ static void connected(struct bt_conn *conn, uint8_t err)
 	current_conn = bt_conn_ref(conn);
 
 	dk_set_led_on(CON_STATUS_LED);
+	char example_data[] = "Hello, NUS!";
+	bt_nus_send(NULL, example_data, sizeof(example_data) - 1);
 }
 
 static void disconnected(struct bt_conn *conn, uint8_t reason)
@@ -100,7 +102,11 @@ static void bt_receive_cb(struct bt_conn *conn, const uint8_t *const data,
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, ARRAY_SIZE(addr));
 
-	LOG_INF("Received data from: %s", addr);
+	char received_string[len + 1];
+	memcpy(received_string, data, len);
+	received_string[len] = '\0';
+
+	LOG_INF("Received data: %s", received_string);
 }
 
 static struct bt_nus_cb nus_cb = {
@@ -170,8 +176,6 @@ int main(void)
 	for (;;)
 	{
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
-		char example_data[] = "Hello, NUS!";
-		bt_nus_send(NULL, example_data, sizeof(example_data) - 1);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
 	}
 }
