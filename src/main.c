@@ -176,6 +176,10 @@ int main(void)
 	for (;;)
 	{
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
+		const char *message = "hello from nus";
+		uint16_t len = strlen(message);
+
+		bt_nus_send(current_conn, (uint8_t *)message, len);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
 	}
 }
